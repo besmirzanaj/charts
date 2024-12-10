@@ -24,6 +24,16 @@ entries:
   validate-email:
   - apiVersion: v2
     appVersion: 0.2.0
+    created: "2024-12-10T05:21:08.224466907Z"
+    description: A Helm chart for running the validate email app in Kubernetes
+    digest: ab25ac2aff76b253778dbf58df1bca73e1055a950d595a2e3b072eb4623f9df2
+    name: validate-email
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/validate-email-0.2.4/validate-email-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
+    appVersion: 0.2.0
     created: "2024-12-10T04:38:26.763054701Z"
     description: A Helm chart for running the validate email app in Kubernetes
     digest: 076c6bdc2652b41b1533eee8e5088a49c71623a9214ab06548972d5aa08c78d4
@@ -32,4 +42,4 @@ entries:
     urls:
     - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
     version: v0.2.3
-generated: "2024-12-10T04:46:36.951697541Z"
+generated: "2024-12-10T05:21:08.224483648Z"
