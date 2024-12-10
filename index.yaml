@@ -3,6 +3,16 @@ entries:
   ripe-atlas-probe:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-12-10T05:27:23.534074184Z"
+    description: A Helm chart for running a ripe atlas probe in Kubernetes
+    digest: 8f00faec50e39c6b2c5cf182ebb8b5661db48fe7d9fd73877f9299c363149e43
+    name: ripe-atlas-probe
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/ripe-atlas-probe-0.1.2/ripe-atlas-probe-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-12-10T04:46:36.849084462Z"
     description: A Helm chart for running a ripe atlas probe in Kubernetes
     digest: 4f0c8b496d2ca931e2386dd2c1144f21ee55ef63fa5e5f6362bd3a31e7c015af
@@ -42,4 +52,4 @@ entries:
     urls:
     - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
     version: v0.2.3
-generated: "2024-12-10T05:21:08.224483648Z"
+generated: "2024-12-10T05:27:23.534094221Z"
