@@ -11,4 +11,15 @@ entries:
     urls:
     - https://besmirzanaj.github.io/charts/ripe-atlas-probe-0.1.0.tgz
     version: 0.1.0
-generated: "2024-10-05T17:24:13.8963334-04:00"
+  validate-email:
+  - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2024-12-10T04:38:26.763054701Z"
+    description: A Helm chart for running the validate email app in Kubernetes
+    digest: 076c6bdc2652b41b1533eee8e5088a49c71623a9214ab06548972d5aa08c78d4
+    name: validate-email
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
+    version: v0.2.3
+generated: "2024-12-10T04:38:26.7630651Z"
