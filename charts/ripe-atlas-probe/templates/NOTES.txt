@@ -1,0 +1,19 @@
+Author: Besmir Zanaj
+
+The atlas ripe software probe is installed now.
+
+You can check the probe logs by running:
+
+kubectl get deployment --namespace {{ .Release.Namespace }} {{ .Release.Name }}
+
+1. First define the software probe in the http://atlas.ripe.net portal that you want to assign this probe.
+If no existing probe, then createa a new one at https://atlas.ripe.net/apply/swprobe/.
+
+2. After the deployment is complete, copy the public key and paste it on your atlas public key settings at the "Update SSH Key" probe setting
+
+The automatically generated public key can be retrieved with:
+
+kubectl get secret --namespace ripe-atlas-probe ripe-atlas-secret -o jsonpath="{.data.probe_key\.pub}" | base64 -d
+
+
+-

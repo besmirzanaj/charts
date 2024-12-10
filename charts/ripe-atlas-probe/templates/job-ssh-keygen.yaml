@@ -1,0 +1,36 @@
+{{- if .Values.job.sshKeyGen.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate-ssh-keypair
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: generate-ssh-keypair
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      serviceAccountName: ssh-keygen-sa
+      containers:
+        - name: ssh-keygen
+          image: docker.io/library/alpine:latest # Use a minimal image or custom one that has ssh-keygen
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache openssh-client kubectl;
+              ssh-keygen -t rsa -b 4096 -f /tmp/probe_key -C "ripe-atlas-ssh-key" -N '';
+              echo "" >> /tmp/probe_key
+              kubectl create secret generic ripe-atlas-secret \
+                --from-file=probe_key=/tmp/probe_key \
+                --from-file=probe_key.pub=/tmp/probe_key.pub \
+                -n {{ .Release.Namespace }} --dry-run=client -o yaml | kubectl apply -f -
+          volumeMounts:
+            - name: keydir
+              mountPath: /tmp
+      restartPolicy: OnFailure
+      volumes:
+        - name: keydir
+          emptyDir: {}
+{{- end }}

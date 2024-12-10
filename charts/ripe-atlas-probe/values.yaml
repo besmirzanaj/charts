@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  repository: docker.io/jamesits/ripe-atlas
+  # repository: docker.io/beszan/docker-ripe-atlas
+  pullPolicy: Always
+  tag: "latest"
+
+securityContext:
+  allowPrivilegeEscalation: true
+  capabilities:
+    add: 
+      - "NET_ADMIN"
+      - "SYS_TIME"
+      - "SYS_ADMIN"
+
+resources:
+  limits:
+    cpu: "1"
+    memory: "64Mi"
+
+env:
+  - name: "RXTXRPT"
+    value: "yes"
+
+persistentVolumeClaim:
+  name: atlas-ripe-status
+  accessMode: ReadWriteMany
+  size: 512Mi
+
+job:
+  sshKeyGen:
+    enabled: true
+
+volumeMounts:
+  - name: ripe-atlas-key
+    mountPath: "/var/atlas-probe/etc/probe_key"
+    subPath: probe_key
+    readOnly: false
+  - name: ripe-atlas-key
+    mountPath: "/var/atlas-probe/etc/probe_key.pub"
+    readOnly: false
+    subPath: probe_key.pub
+  - name: atlas-ripe-status
+    # mountPath: "/var/atlas-probe/"
+    mountPath: "/var/atlas-probe/status/"
+
+volumes:
+  - name: atlas-ripe-status
+    persistentVolumeClaim:
+      claimName: atlas-ripe-status
+  - name: ripe-atlas-key
+    secret:
+      secretName: ripe-atlas-secret
