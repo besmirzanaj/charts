@@ -1,5 +1,8 @@
 apiVersion: v2
 name: validate-email
+type: application
+version: "0.2.5"
+appVersion: "0.2.7"
 description: |
   # validate-email
 
@@ -207,6 +210,4 @@ description: |
   helm uninstall validate-email --namespace validate-email 
 
 
-type: application
-version: "0.2.5"
-appVersion: "0.2.0"
+

@@ -199,10 +199,10 @@ curl -s "$VALIDATE_API_URL" -X POST -d '{"email":"besmirtv@gmail.com"}' -H 'Cont
 ## Helm
 
 Install locally from the repo:
-helm install validate-email  validate-email/ --namespace validate-email --create-namespace
+helm install validate-email-release besmirzanaj/validate-email --namespace validate-email --create-namespace
 
 Uninstall
-helm uninstall validate-email --namespace validate-email
+helm uninstall validate-email-release --namespace validate-email
 
 ## Values
 
