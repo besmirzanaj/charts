@@ -25,7 +25,7 @@ env:
 
 persistentVolumeClaim:
   name: atlas-ripe-status
-  accessMode: ReadWriteMany
+  accessMode: ReadWriteOncePod
   size: 512Mi
 
 job:
