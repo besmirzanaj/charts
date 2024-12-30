@@ -1,5 +1,8 @@
 apiVersion: v2
 name: ripe-atlas-probe
+type: application
+version: "0.1.4"
+appVersion: "1.16.0"
 description: |
   # RIPE-NCC atlas probe helm chart
 
@@ -56,6 +59,4 @@ description: |
   kubectl get secret --namespace ripe-atlas-probe ripe-atlas-secret -o jsonpath="{.data.probe_key\.pub}" | base64 -d
   ```
 
-type: application
-version: "0.1.3"
-appVersion: "1.16.0"
+
