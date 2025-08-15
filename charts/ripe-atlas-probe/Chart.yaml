@@ -3,7 +3,7 @@ name: ripe-atlas-probe
 type: application
 version: "0.1.5"
 appVersion: "1.16.0"
-description: |
+description: >
   # RIPE-NCC atlas probe helm chart
 
   This helm chart will install a RIPE NCC [software atlas probe](https://www.ripe.net/analyse/internet-measurements/ripe-atlas/host-a-probe/#software-probes). Packages [here](https://atlas.ripe.net/docs/howtos/software-probes.html)
