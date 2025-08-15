@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ripe-atlas-probe
 type: application
-version: "0.1.5"
+version: "0.1.8"
 appVersion: "1.16.0"
 description: >
   # RIPE-NCC atlas probe helm chart
