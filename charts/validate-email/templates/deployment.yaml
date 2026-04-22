@@ -28,33 +28,31 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           env:
-            - name: VALIDATE_API_USER
+            - name: VALIDATE_API_KEYS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-validate-email
-                  key: validate_api_user
-            - name: VALIDATE_API_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-validate-email
-                  key: validate_api_password
-            - name: VALIDATE_JWT_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-validate-email
-                  key: validate_jwt_key
+                  name: {{ .Values.existingSecret | default (include "validate-email.fullname" .) }}
+                  key: api_keys
+            - name: VALIDATE_SMTP_SENDER
+              value: {{ .Values.smtpSender | quote }}
+            - name: VALIDATE_SMTP_TIMEOUT
+              value: {{ .Values.smtpTimeout | quote }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}-{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

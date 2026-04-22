@@ -1,45 +1,34 @@
-1. The application is up and running
+validate-email has been deployed.
 
-2. Input data
+1. Expose the service locally:
 
-The app expects the data in this json format after proper login:
+  kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ include "validate-email.fullname" . }} 8080:{{ .Values.service.port }}
 
-{
-  "email":"your-email@gmail.com"
-}
+2. Get your API key:
 
-3. Expose the service locally:
+  {{- if .Values.existingSecret }}
+  # Using existing secret: {{ .Values.existingSecret }}
+  API_KEY=$(kubectl -n {{ .Release.Namespace }} get secret {{ .Values.existingSecret }} -o jsonpath="{.data.api_keys}" | base64 -d)
+  {{- else if .Values.apiKeys }}
+  # API key was provided via values
+  API_KEY="{{ .Values.apiKeys }}"
+  {{- else }}
+  # An API key was auto-generated. Retrieve it with:
+  API_KEY=$(kubectl -n {{ .Release.Namespace }} get secret {{ include "validate-email.fullname" . }} -o jsonpath="{.data.api_keys}" | base64 -d)
+  {{- end }}
 
-kubectl --namespace {{ .Release.Namespace }} port-forward service/{{ include "validate-email.fullname" . }} 8080:{{ .Values.service.port }}
+3. Validate an email:
 
-4. Test the application
-On another terminal:
+  curl -s http://127.0.0.1:8080/validate_email \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "X-API-Key: $API_KEY" \
+    -d '{"email":"user@example.com"}'
 
-Get the JWT secret key and the username password the helm chart created for you:
+4. Health check:
 
-VALIDATE_JWT_SECRET_KEY=$(kubectl -n {{ .Release.Namespace }} get secret {{ .Release.Name }}-validate-email -o jsonpath="{.data.validate_jwt_key}" | base64 -d)
-VALIDATE_API_USER=$(kubectl -n {{ .Release.Namespace }} get secret {{ .Release.Name }}-validate-email -o jsonpath="{.data.validate_api_user}" | base64 -d)
-VALIDATE_API_PASSWORD=$(kubectl -n {{ .Release.Namespace }} get secret {{ .Release.Name }}-validate-email -o jsonpath="{.data.validate_api_password}" | base64 -d)
+  curl http://127.0.0.1:8080/healthz
 
+5. Uninstall:
 
-Define the host where the app is running, and its endpoints. We exposed in this example with port-forward:
-
-VALIDATE_HOSTNAME="http://127.0.0.1"
-VALIDATE_LOGIN_URL="$VALIDATE_HOSTNAME:8080/login"
-VALIDATE_API_URL="$VALIDATE_HOSTNAME:8080/validate_email"
-
-
-Get the token to use the app:
-
-VALIDATE_TOKEN=$(curl -X POST "$VALIDATE_LOGIN_URL" -H "Content-Type: application/json" -d '{"username": "'"${VALIDATE_API_USER}"'", "password": "'"${VALIDATE_API_PASSWORD}"'"}' -s | jq .access_token -r)
-
-
-Finally run the validation:
-curl -s "$VALIDATE_API_URL" -X POST -d '{"email":"besmirtv@gmail.com"}' -H 'Content-type: Application/json' -H "Authorization: Bearer $VALIDATE_TOKEN" 
-
-
-5 Uninstall
-
-
-helm uninstall {{ .Release.Name }} --namespace -n {{ .Release.Namespace }}
-=========================================================
+  helm uninstall {{ .Release.Name }} --namespace {{ .Release.Namespace }}
