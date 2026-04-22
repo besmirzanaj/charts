@@ -1,0 +1,62 @@
+name: Update Chart Version
+
+on:
+  repository_dispatch:
+    types: [update-chart]
+
+jobs:
+  update-chart:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Chart.yaml
+        run: |
+          CHART="${{ github.event.client_payload.chart }}"
+          VERSION="${{ github.event.client_payload.version }}"
+
+          if [[ -z "$CHART" || -z "$VERSION" ]]; then
+            echo "ERROR: chart or version not provided in payload"
+            exit 1
+          fi
+
+          CHART_FILE="charts/${CHART}/Chart.yaml"
+
+          if [[ ! -f "$CHART_FILE" ]]; then
+            echo "ERROR: ${CHART_FILE} not found"
+            exit 1
+          fi
+
+          echo "Updating ${CHART} to version ${VERSION}"
+
+          # Update both version and appVersion
+          sed -i "s/^version:.*/version: \"${VERSION}\"/" "$CHART_FILE"
+          sed -i "s/^appVersion:.*/appVersion: \"${VERSION}\"/" "$CHART_FILE"
+
+          cat "$CHART_FILE"
+
+      - name: Commit and push
+        run: |
+          CHART="${{ github.event.client_payload.chart }}"
+          VERSION="${{ github.event.client_payload.version }}"
+
+          git add "charts/${CHART}/Chart.yaml"
+
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit (version already up to date)"
+            exit 0
+          fi
+
+          git commit -m "chore(${CHART}): bump to ${VERSION}"
+          git push origin main
