@@ -169,6 +169,25 @@ entries:
     version: 0.1.0
   validate-email:
   - apiVersion: v2
+    appVersion: 1.1.0
+    created: "2026-04-22T22:41:27.153884859Z"
+    description: Email deliverability validation API. Checks whether an email address
+      is actually active by resolving the domain's MX records and probing the SMTP
+      server with a RCPT TO command. Authenticated via static API keys (X-API-Key
+      header).
+    digest: d6b4f0bcfb24d77f8737d24d8f273e5ca8f70828af0e8728558e6a04ecd2904c
+    home: https://gitlab.com/besmirzanaj/validate-email
+    maintainers:
+    - email: besmirzanaj@gmail.com
+      name: besmirzanaj
+    name: validate-email
+    sources:
+    - https://gitlab.com/besmirzanaj/validate-email
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/validate-email-1.1.0/validate-email-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: 1.0.5
     created: "2026-04-22T22:24:03.849435078Z"
     description: Email deliverability validation API. Checks whether an email address
@@ -404,4 +423,4 @@ entries:
     urls:
     - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
     version: v0.2.3
-generated: "2026-04-22T22:24:03.84948984Z"
+generated: "2026-04-22T22:41:27.153921083Z"
