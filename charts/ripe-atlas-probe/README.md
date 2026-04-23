@@ -90,6 +90,36 @@ The generated public ssh key is available at the following secret:
 kubectl get secret --namespace ripe-atlas-probe ripe-atlas-secret -o jsonpath="{.data.probe_key\.pub}" | base64 -d
 ```
 
+## Upgrading from chart version 0.2.0 or earlier
+
+Chart version 0.3.0 aligns with upstream image changes introduced in probe version 5090+:
+
+- **SSH keys** moved from `/var/atlas-probe/etc/` to `/etc/ripe-atlas/` and must be owned by `101:999`.
+- **Runtime data** moved from `/var/atlas-probe/status/` to `/var/spool/ripe-atlas` and `/run/ripe-atlas`.
+- `/var/atlas-probe` is no longer used.
+
+If you are upgrading an existing deployment, delete the old release and reinstall to pick up the new paths. If you have existing SSH keys you want to keep, export them first:
+
+```bash
+# Export existing keys before upgrading
+kubectl get secret -n ripe-atlas-probe ripe-atlas-secret -o jsonpath="{.data.probe_key}" | base64 -d > /tmp/probe_key
+kubectl get secret -n ripe-atlas-probe ripe-atlas-secret -o jsonpath="{.data.probe_key\.pub}" | base64 -d > /tmp/probe_key.pub
+
+# Uninstall old release
+helm uninstall ripe-atlas-probe -n ripe-atlas-probe
+
+# Reinstall with new chart version, skipping key generation
+helm install ripe-atlas-probe besmirzanaj/ripe-atlas-probe \
+  --namespace ripe-atlas-probe --create-namespace \
+  --set job.sshKeyGen.enabled=false
+
+# Re-import the keys
+kubectl create secret generic ripe-atlas-secret \
+  --from-file=probe_key=/tmp/probe_key \
+  --from-file=probe_key.pub=/tmp/probe_key.pub \
+  -n ripe-atlas-probe --dry-run=client -o yaml | kubectl apply -f -
+```
+
 ## Values
 
 | Key | Type | Default | Description |

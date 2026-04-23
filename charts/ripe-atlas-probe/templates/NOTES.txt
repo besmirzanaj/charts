@@ -14,3 +14,5 @@ If no existing probe, then create a new one at https://atlas.ripe.net/apply/swpr
 The automatically generated public key can be retrieved with:
 
 kubectl get secret --namespace {{ .Release.Namespace }} ripe-atlas-secret -o jsonpath="{.data.probe_key\.pub}" | base64 -d
+
+NOTE: Since probe version 5090+, SSH keys are stored at /etc/ripe-atlas/ and must be owned by 101:999.

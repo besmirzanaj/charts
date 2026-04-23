@@ -1,8 +1,8 @@
 apiVersion: v2
 name: ripe-atlas-probe
 type: application
-version: "0.2.0"
-appVersion: "1.16.0"
+version: "0.3.0"
+appVersion: "5100"
 description: A Helm chart to deploy a RIPE NCC software Atlas probe with automatic SSH key generation
 home: https://atlas.ripe.net
 sources:

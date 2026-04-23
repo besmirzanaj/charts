@@ -3,7 +3,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ include "ripe-atlas-probe.fullname" . }}-status
+  name: {{ include "ripe-atlas-probe.fullname" . }}-spool
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "ripe-atlas-probe.labels" . | nindent 4 }}

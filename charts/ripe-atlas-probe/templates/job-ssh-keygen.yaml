@@ -22,6 +22,7 @@ spec:
               apk add --no-cache openssh-client kubectl;
               yes | ssh-keygen -t rsa -m PEM -b 4096 -f /tmp/probe_key -C "ripe-atlas-ssh-key" -N '';
               echo "" >> /tmp/probe_key
+              chown 101:999 /tmp/probe_key /tmp/probe_key.pub
               kubectl create secret generic ripe-atlas-secret \
                 --from-file=probe_key=/tmp/probe_key \
                 --from-file=probe_key.pub=/tmp/probe_key.pub \

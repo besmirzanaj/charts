@@ -10,6 +10,11 @@ image:
   # -- Image tag (defaults to appVersion)
   tag: "latest"
 
+# -- Pod-level security context
+# fsGroup ensures mounted volumes are owned by the ripe-atlas group (999)
+podSecurityContext:
+  fsGroup: 999
+
 # -- Security context for the probe container (requires elevated privileges for network measurements)
 securityContext:
   allowPrivilegeEscalation: true
@@ -33,11 +38,11 @@ env:
   - name: "RXTXRPT"
     value: "yes"
 
-# -- Persistence configuration for probe status data
-# Status data is ephemeral and regenerated on startup, so emptyDir is the default.
-# Enable persistence only if you need status data to survive pod restarts.
+# -- Persistence configuration for probe runtime data (/var/spool/ripe-atlas)
+# Runtime data is ephemeral and regenerated on startup, so emptyDir is the default.
+# Enable persistence only if you need spool data to survive pod restarts.
 persistence:
-  # -- Enable persistent storage for probe status data
+  # -- Enable persistent storage for probe spool data
   enabled: false
   # -- PVC access mode
   accessMode: ReadWriteOnce
@@ -55,11 +60,11 @@ job:
 # -- Volume mounts for the probe container
 volumeMounts:
   - name: ripe-atlas-key
-    mountPath: "/var/atlas-probe/etc/probe_key"
+    mountPath: "/etc/ripe-atlas/probe_key"
     subPath: probe_key
     readOnly: false
   - name: ripe-atlas-key
-    mountPath: "/var/atlas-probe/etc/probe_key.pub"
+    mountPath: "/etc/ripe-atlas/probe_key.pub"
     readOnly: false
     subPath: probe_key.pub
 
