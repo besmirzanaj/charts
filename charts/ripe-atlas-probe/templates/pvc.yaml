@@ -12,4 +12,6 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistentVolumeClaim.size }}
+  {{- if .Values.persistentVolumeClaim.storageClass }}
   storageClassName: {{ .Values.persistentVolumeClaim.storageClass }}
+  {{- end }}

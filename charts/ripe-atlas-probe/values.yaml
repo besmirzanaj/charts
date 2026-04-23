@@ -1,11 +1,16 @@
+# -- Number of probe replicas
 replicaCount: 1
 
+# -- Container image configuration
 image:
+  # -- Image repository
   repository: docker.io/jamesits/ripe-atlas
-  # repository: docker.io/beszan/docker-ripe-atlas
+  # -- Image pull policy
   pullPolicy: Always
+  # -- Image tag (defaults to appVersion)
   tag: "latest"
 
+# -- Security context for the probe container (requires elevated privileges for network measurements)
 securityContext:
   allowPrivilegeEscalation: true
   capabilities:
@@ -14,22 +19,35 @@ securityContext:
       - "SYS_TIME"
       - "SYS_ADMIN"
 
+# -- Resource limits and requests
 resources:
   limits:
     cpu: "1"
     memory: "64Mi"
+  requests:
+    cpu: "100m"
+    memory: "32Mi"
 
+# -- Environment variables passed to the probe container
 env:
   - name: "RXTXRPT"
     value: "yes"
 
+# -- Persistent volume claim for probe status data
 persistentVolumeClaim:
+  # -- PVC name
   name: atlas-ripe-status
+  # -- PVC access mode
   accessMode: ReadWriteMany
+  # -- PVC storage size
   size: 512Mi
+  # -- Storage class name (uses cluster default if not set)
+  # storageClass: ""
 
+# -- SSH key generation job configuration
 job:
   sshKeyGen:
+    # -- Enable automatic SSH keypair generation
     enabled: true
 
 volumeMounts:
