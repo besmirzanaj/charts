@@ -1,17 +1,19 @@
+{{- if .Values.persistence.enabled }}
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .Values.persistentVolumeClaim.name }}
+  name: {{ include "ripe-atlas-probe.fullname" . }}-status
   namespace: {{ .Release.Namespace }}
-  annotations:
-    "helm.sh/hook": pre-install  # This hook ensures the PVC is created before the deployment
+  labels:
+    {{- include "ripe-atlas-probe.labels" . | nindent 4 }}
 spec:
   accessModes:
-    - {{ .Values.persistentVolumeClaim.accessMode }}
+    - {{ .Values.persistence.accessMode }}
   resources:
     requests:
-      storage: {{ .Values.persistentVolumeClaim.size }}
-  {{- if .Values.persistentVolumeClaim.storageClass }}
-  storageClassName: {{ .Values.persistentVolumeClaim.storageClass }}
+      storage: {{ .Values.persistence.size }}
+  {{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
   {{- end }}
+{{- end }}

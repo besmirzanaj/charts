@@ -42,7 +42,16 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
+            - name: atlas-probe-status
+              mountPath: "/var/atlas-probe/status/"
       volumes:
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
+        - name: atlas-probe-status
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "ripe-atlas-probe.fullname" . }}-status
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

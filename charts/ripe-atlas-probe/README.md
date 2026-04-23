@@ -14,19 +14,22 @@ If you already have a software probe, you can reuse it and just add the generate
 
 ### Generic install
 
-The default CSI will be used to create the atlas probe status volume.
+Status data uses an emptyDir volume by default (ephemeral, lost on pod restart).
 
 ```
 helm install ripe-atlas-probe ripe-atlas-probe \
   --namespace ripe-atlas-probe --create-namespace
 ```
 
-### Specifying the Storage CSI
+### With persistent storage
+
+If you want status data to survive pod restarts:
 
 ```
 helm upgrade -i ripe-atlas-probe ripe-atlas-probe \
   --namespace ripe-atlas-probe --create-namespace \
-  --set persistentVolumeClaim.storageClass="nfs-csi"
+  --set persistence.enabled=true \
+  --set persistence.storageClass="nfs-csi"
 ```
 
 ### Skip creating the ssh key pair
@@ -36,7 +39,6 @@ If you already have SSH keypair files that you want to reuse, you can run the fo
 ```
 helm install ripe-atlas-probe ripe-atlas-probe \
   --namespace ripe-atlas-probe --create-namespace \
-  --set persistentVolumeClaim.storageClass="nfs-csi" \
   --set job.sshKeyGen.enabled=false
 ```
 

@@ -33,12 +33,14 @@ env:
   - name: "RXTXRPT"
     value: "yes"
 
-# -- Persistent volume claim for probe status data
-persistentVolumeClaim:
-  # -- PVC name
-  name: atlas-ripe-status
+# -- Persistence configuration for probe status data
+# Status data is ephemeral and regenerated on startup, so emptyDir is the default.
+# Enable persistence only if you need status data to survive pod restarts.
+persistence:
+  # -- Enable persistent storage for probe status data
+  enabled: false
   # -- PVC access mode
-  accessMode: ReadWriteMany
+  accessMode: ReadWriteOnce
   # -- PVC storage size
   size: 512Mi
   # -- Storage class name (uses cluster default if not set)
@@ -50,6 +52,7 @@ job:
     # -- Enable automatic SSH keypair generation
     enabled: true
 
+# -- Volume mounts for the probe container
 volumeMounts:
   - name: ripe-atlas-key
     mountPath: "/var/atlas-probe/etc/probe_key"
@@ -59,14 +62,9 @@ volumeMounts:
     mountPath: "/var/atlas-probe/etc/probe_key.pub"
     readOnly: false
     subPath: probe_key.pub
-  - name: atlas-ripe-status
-    # mountPath: "/var/atlas-probe/"
-    mountPath: "/var/atlas-probe/status/"
 
+# -- Volumes for the probe pod
 volumes:
-  - name: atlas-ripe-status
-    persistentVolumeClaim:
-      claimName: atlas-ripe-status
   - name: ripe-atlas-key
     secret:
       secretName: ripe-atlas-secret
