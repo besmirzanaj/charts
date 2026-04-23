@@ -10,6 +10,37 @@ This chart will also create the necessary SSH keys for the probe and upload inst
 
 If you already have a software probe, you can reuse it and just add the generated public key in the "Update SSH key" section of the probe.
 
+## Quickstart with Kind
+
+Test the chart locally using [Kind](https://kind.sigs.k8s.io/):
+
+```bash
+# Create a Kind cluster
+kind create cluster --name ripe-atlas
+
+# Add the Helm repo
+helm repo add besmirzanaj https://besmirzanaj.github.io/charts/
+helm repo update
+
+# Install the chart
+helm install ripe-atlas-probe besmirzanaj/ripe-atlas-probe \
+  --namespace ripe-atlas-probe --create-namespace
+
+# Wait for the SSH keygen job to complete
+kubectl wait --for=condition=complete job/generate-ssh-keypair \
+  -n ripe-atlas-probe --timeout=120s
+
+# Retrieve the generated public key
+kubectl get secret -n ripe-atlas-probe ripe-atlas-secret \
+  -o jsonpath="{.data.probe_key\.pub}" | base64 -d
+
+# Check probe status
+kubectl get pods -n ripe-atlas-probe
+
+# Cleanup when done
+kind delete cluster --name ripe-atlas
+```
+
 ## How to install the chart
 
 ### Generic install
