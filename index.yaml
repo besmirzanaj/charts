@@ -3,6 +3,27 @@ entries:
   ripe-atlas-probe:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2026-04-23T17:27:00.883795327Z"
+    description: A Helm chart to deploy a RIPE NCC software Atlas probe with automatic
+      SSH key generation
+    digest: c3c343af2bf442f0c104870e6b0f98bdc2ef71279acf67832f74bd902b70363f
+    home: https://atlas.ripe.net
+    keywords:
+    - ripe
+    - atlas
+    - probe
+    - network-monitoring
+    maintainers:
+    - name: Besmir Zanaj
+    name: ripe-atlas-probe
+    sources:
+    - https://github.com/besmirzanaj/charts
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/ripe-atlas-probe-0.2.0/ripe-atlas-probe-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2026-04-23T17:18:06.903829152Z"
     description: A Helm chart to deploy a RIPE NCC software Atlas probe with automatic
       SSH key generation
@@ -463,4 +484,4 @@ entries:
     urls:
     - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
     version: v0.2.3
-generated: "2026-04-23T17:18:06.903885338Z"
+generated: "2026-04-23T17:27:00.883846594Z"
