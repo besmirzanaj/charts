@@ -9,14 +9,30 @@ Email deliverability validation API. Checks whether an email address is actually
 - Kubernetes 1.19+
 - Helm 3.x
 - The cluster nodes must have **outbound access to port 25** (SMTP)
+- **Registry access** -- the container image is hosted on a private Docker registry. Contact besmirzanaj[@]gmail.com to request access or a deploy token.
 
 ## Installation
+
+Once you have registry credentials, create an image pull secret before installing:
+
+```bash
+kubectl create namespace validate-email
+
+kubectl create secret docker-registry regcred \
+  --docker-server=registry.gitlab.com \
+  --docker-username=<your-username> \
+  --docker-password=<your-token> \
+  -n validate-email
+```
+
+Then install the chart referencing the secret:
 
 ```bash
 helm repo add besmirzanaj https://besmirzanaj.github.io/charts
 helm repo update
 helm install validate-email besmirzanaj/validate-email \
-  --namespace validate-email --create-namespace \
+  --namespace validate-email \
+  --set imagePullSecrets[0].name=regcred \
   --set apiKeys="your-secret-api-key"
 ```
 
