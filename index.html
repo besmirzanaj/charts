@@ -1,32 +1,29 @@
-<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang=""> 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-    <meta charset="utf-8" /> 
-    <meta name="generator" content="pandoc" /> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" /> 
-    <title>README</title> 
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>Helm Charts - besmirzanaj</title>
 </head>
 <body>
-    <p align="center"> <img src="https://helm.sh/img/helm.svg" width="140px" alt="Helm LOGO"/> 
-    <br> 
-    <h1 id="how-to-use-">How to use ?</h1>
-    Add the repo to your helm
-        <pre class="bash"><code>helm repo add besmirzanaj https://besmirzanaj.github.io/charts/</code></pre> 
-<h1 id="charts">Charts</h1>
+    <p align="center"><img src="https://helm.sh/img/helm.svg" width="140px" alt="Helm LOGO"/></p>
+    <h1 id="how-to-use">How to use?</h1>
+    <p>Add the repo to your helm:</p>
+    <pre class="bash"><code>helm repo add besmirzanaj https://besmirzanaj.github.io/charts/</code></pre>
 
-<ul>
-  <li>ripe-atlas-probe</li>
-  <li>validate-email</li>
-</ul>
+    <h1 id="charts">Charts</h1>
+    <ul>
+  <li><strong>ifconfig</strong> (v0.1.0) - A Helm chart to deploy echoip with GeoIP databases (GeoLite2)</li>
+  <li><strong>ripe-atlas-probe</strong> (v0.3.0) - A Helm chart to deploy a RIPE NCC software Atlas probe with automatic SSH key generation</li>
+  <li><strong>validate-email</strong> (v1.2.1) - >-</li>
 
-<h1 id="charts">Install Guide</h1>
+    </ul>
 
-To install a chart from this repo:
-
-<pre class="bash"><code>helm install chart-from-above-list besmirzanaj/chart-from-above-list</code></pre> 
-<br>
-
-To uninstall the chart:
-
-<pre class="bash"><code>helm delete chart-from-above-list</code></pre> 
-<br>
-For more info on charts, see the main repo at <a href="https://github.com/besmirzanaj/charts">https://github.com/besmirzanaj/charts</a>.
+    <h1 id="install-guide">Install Guide</h1>
+    <p>To install a chart from this repo:</p>
+    <pre class="bash"><code>helm install my-release besmirzanaj/&lt;chart-name&gt;</code></pre>
+    <p>To uninstall the chart:</p>
+    <pre class="bash"><code>helm delete my-release</code></pre>
+    <p>For more info on charts, see the main repo at <a href="https://github.com/besmirzanaj/charts">https://github.com/besmirzanaj/charts</a>.</p>
+</body>
+</html>
