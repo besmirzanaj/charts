@@ -1,0 +1,76 @@
+# -- Number of replicas
+replicaCount: 1
+
+# -- echoip container image configuration
+image:
+  repository: ghcr.io/besmirzanaj/echoip
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# -- GeoIP updater sidecar image configuration
+geoipupdate:
+  image:
+    repository: ghcr.io/maxmind/geoipupdate
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  # -- MaxMind account ID (required)
+  accountId: ""
+  # -- MaxMind license key (required)
+  licenseKey: ""
+  # -- Edition IDs to download
+  editionIds: "GeoLite2-ASN GeoLite2-City GeoLite2-Country"
+  # -- Update frequency in hours
+  frequency: "24"
+  # -- Enable verbose logging
+  verbose: "1"
+
+# -- Use an existing secret for GeoIP credentials
+# The secret must contain keys: GEOIPUPDATE_ACCOUNT_ID and GEOIPUPDATE_LICENSE_KEY
+existingSecret: ""
+
+# -- GeoIP database directory path
+geoipDir: /usr/share/GeoIP
+
+# -- echoip command arguments
+echoipArgs:
+  - "-r"
+  - "-H"
+  - "X-Forwarded-For"
+  - "-a"
+  - "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
+  - "-c"
+  - "/usr/share/GeoIP/GeoLite2-City.mmdb"
+  - "-f"
+  - "/usr/share/GeoIP/GeoLite2-Country.mmdb"
+
+# -- Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+
+# -- Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: ifconfig.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# -- Resource limits and requests for echoip
+resources: {}
+
+# -- Resource limits and requests for geoipupdate sidecar
+geoipResources: {}
+
+# -- Node selector
+nodeSelector: {}
+
+# -- Tolerations
+tolerations: []
+
+# -- Affinity
+affinity: {}

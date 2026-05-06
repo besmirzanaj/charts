@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ifconfig.fullname" . }}
+  labels:
+    {{- include "ifconfig.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ifconfig.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ifconfig.labels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: geoipupdate-init
+          image: "{{ .Values.geoipupdate.image.repository }}:{{ .Values.geoipupdate.image.tag }}"
+          imagePullPolicy: {{ .Values.geoipupdate.image.pullPolicy }}
+          env:
+            - name: GEOIPUPDATE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ifconfig.geoipSecretName" . }}
+                  key: GEOIPUPDATE_ACCOUNT_ID
+            - name: GEOIPUPDATE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ifconfig.geoipSecretName" . }}
+                  key: GEOIPUPDATE_LICENSE_KEY
+            - name: GEOIPUPDATE_EDITION_IDS
+              value: {{ .Values.geoipupdate.editionIds | quote }}
+            - name: GEOIPUPDATE_VERBOSE
+              value: {{ .Values.geoipupdate.verbose | quote }}
+            - name: GEOIPUPDATE_DB_DIR
+              value: {{ .Values.geoipDir | quote }}
+          volumeMounts:
+            - name: geoip-data
+              mountPath: {{ .Values.geoipDir }}
+          {{- with .Values.geoipResources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      containers:
+        - name: geoipupdate
+          image: "{{ .Values.geoipupdate.image.repository }}:{{ .Values.geoipupdate.image.tag }}"
+          imagePullPolicy: {{ .Values.geoipupdate.image.pullPolicy }}
+          env:
+            - name: GEOIPUPDATE_ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ifconfig.geoipSecretName" . }}
+                  key: GEOIPUPDATE_ACCOUNT_ID
+            - name: GEOIPUPDATE_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ifconfig.geoipSecretName" . }}
+                  key: GEOIPUPDATE_LICENSE_KEY
+            - name: GEOIPUPDATE_EDITION_IDS
+              value: {{ .Values.geoipupdate.editionIds | quote }}
+            - name: GEOIPUPDATE_FREQUENCY
+              value: {{ .Values.geoipupdate.frequency | quote }}
+            - name: GEOIPUPDATE_VERBOSE
+              value: {{ .Values.geoipupdate.verbose | quote }}
+            - name: GEOIPUPDATE_DB_DIR
+              value: {{ .Values.geoipDir | quote }}
+          volumeMounts:
+            - name: geoip-data
+              mountPath: {{ .Values.geoipDir }}
+          {{- with .Values.geoipResources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: echoip
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.echoipArgs | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: geoip-data
+              mountPath: {{ .Values.geoipDir }}
+              readOnly: true
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: geoip-data
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
