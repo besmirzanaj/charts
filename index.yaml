@@ -1,5 +1,26 @@
 apiVersion: v1
 entries:
+  ifconfig:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-05-06T22:31:45.288178904Z"
+    description: A Helm chart to deploy echoip with GeoIP databases (GeoLite2)
+    digest: b3b5154ae67891be7d2e3d6bdeeb26b219526c320d37f35557cf473ff57a8cef
+    home: https://github.com/besmirzanaj/echoip
+    keywords:
+    - ifconfig
+    - echoip
+    - geoip
+    - ip-lookup
+    maintainers:
+    - name: Besmir Zanaj
+    name: ifconfig
+    sources:
+    - https://github.com/besmirzanaj/charts
+    type: application
+    urls:
+    - https://github.com/besmirzanaj/charts/releases/download/ifconfig-0.1.0/ifconfig-0.1.0.tgz
+    version: 0.1.0
   ripe-atlas-probe:
   - apiVersion: v2
     appVersion: "5100"
@@ -524,4 +545,4 @@ entries:
     urls:
     - https://github.com/besmirzanaj/charts/releases/download/validate-email-v0.2.3/validate-email-v0.2.3.tgz
     version: v0.2.3
-generated: "2026-04-24T20:52:31.748135155Z"
+generated: "2026-05-06T22:31:45.288217381Z"
