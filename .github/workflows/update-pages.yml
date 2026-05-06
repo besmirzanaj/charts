@@ -34,7 +34,7 @@ jobs:
           for chart_dir in charts/*/; do
             if [[ -f "${chart_dir}Chart.yaml" ]]; then
               name=$(basename "$chart_dir")
-              description=$(yq -r '.description' "${chart_dir}Chart.yaml")
+              description=$(yq -r '.description' "${chart_dir}Chart.yaml" | head -1 | sed 's/\..*/\./')
               version=$(yq -r '.version' "${chart_dir}Chart.yaml")
               CHART_LIST="${CHART_LIST}  <li><strong>${name}</strong> (v${version}) - ${description}</li>\n"
             fi
