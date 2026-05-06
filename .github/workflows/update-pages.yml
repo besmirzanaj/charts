@@ -1,0 +1,97 @@
+name: Update GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/*/Chart.yaml"
+  workflow_run:
+    workflows: ["Release Charts"]
+    types:
+      - completed
+
+concurrency:
+  group: update-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate chart list and update index.html
+        run: |
+          # Build the chart list from charts/ directory
+          CHART_LIST=""
+          for chart_dir in charts/*/; do
+            if [[ -f "${chart_dir}Chart.yaml" ]]; then
+              name=$(basename "$chart_dir")
+              description=$(grep '^description:' "${chart_dir}Chart.yaml" | sed 's/^description: *//')
+              version=$(grep '^version:' "${chart_dir}Chart.yaml" | sed 's/^version: *//;s/"//g')
+              CHART_LIST="${CHART_LIST}  <li><strong>${name}</strong> (v${version}) - ${description}</li>\n"
+            fi
+          done
+
+          # Generate index.html
+          cat > /tmp/index.html << 'HEREDOC_END'
+          <!DOCTYPE html>
+          <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+          <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+              <title>Helm Charts - besmirzanaj</title>
+          </head>
+          <body>
+              <p align="center"><img src="https://helm.sh/img/helm.svg" width="140px" alt="Helm LOGO"/></p>
+              <h1 id="how-to-use">How to use?</h1>
+              <p>Add the repo to your helm:</p>
+              <pre class="bash"><code>helm repo add besmirzanaj https://besmirzanaj.github.io/charts/</code></pre>
+
+              <h1 id="charts">Charts</h1>
+              <ul>
+          CHART_LIST_PLACEHOLDER
+              </ul>
+
+              <h1 id="install-guide">Install Guide</h1>
+              <p>To install a chart from this repo:</p>
+              <pre class="bash"><code>helm install my-release besmirzanaj/&lt;chart-name&gt;</code></pre>
+              <p>To uninstall the chart:</p>
+              <pre class="bash"><code>helm delete my-release</code></pre>
+              <p>For more info on charts, see the main repo at <a href="https://github.com/besmirzanaj/charts">https://github.com/besmirzanaj/charts</a>.</p>
+          </body>
+          </html>
+          HEREDOC_END
+
+          # Replace placeholder with chart list
+          sed -i "s|CHART_LIST_PLACEHOLDER|${CHART_LIST}|" /tmp/index.html
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Update index.html on gh-pages
+        run: |
+          cp /tmp/index.html gh-pages/index.html
+
+      - name: Commit and push
+        working-directory: gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to index.html"
+            exit 0
+          fi
+          git commit -m "docs: update chart listing on GitHub Pages"
+          git push origin gh-pages
