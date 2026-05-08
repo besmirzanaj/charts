@@ -37,6 +37,8 @@ spec:
               value: {{ .Values.smtpSender | quote }}
             - name: VALIDATE_SMTP_TIMEOUT
               value: {{ .Values.smtpTimeout | quote }}
+            - name: VALIDATE_WAITRESS_THREADS
+              value: {{ .Values.waitressThreads | quote }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

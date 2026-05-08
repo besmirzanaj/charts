@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: registry.gitlab.com/besmirzanaj/validate-email
@@ -33,8 +33,10 @@ ingress:
   enabled: false
   className: ""
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    # nginx rate-limiting (recommended for HA to protect SMTP probing):
+    # nginx.ingress.kubernetes.io/limit-rps: "10"
+    # nginx.ingress.kubernetes.io/limit-connections: "5"
+    # nginx.ingress.kubernetes.io/limit-burst-multiplier: "3"
   hosts:
     - host: chart-example.local
       paths:
@@ -82,5 +84,16 @@ smtpSender: "test@example.com"
 # -- SMTP connection timeout in seconds
 smtpTimeout: 10
 
+# -- Waitress WSGI thread pool size (each SMTP probe blocks up to smtpTimeout seconds)
+waitressThreads: 16
+
 # -- Use an existing secret instead of creating one. The secret must contain a key named "api_keys".
 existingSecret: ""
+
+# -- Prometheus PodMonitor (requires prometheus-operator / kube-prometheus-stack)
+podMonitor:
+  enabled: false
+  # -- Scrape interval
+  interval: 30s
+  # -- Additional labels for the PodMonitor (e.g. to match a Prometheus instance)
+  additionalLabels: {}
