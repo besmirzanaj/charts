@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/besmirzanaj/echoip
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "1.0.0"
 
 # -- GeoIP updater sidecar image configuration
 geoipupdate:
