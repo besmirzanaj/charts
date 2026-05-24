@@ -87,6 +87,35 @@ smtpTimeout: 10
 # -- Waitress WSGI thread pool size (each SMTP probe blocks up to smtpTimeout seconds)
 waitressThreads: 16
 
+# -- Cache TTL in seconds for validated email results
+cacheTTL: 300
+
+# -- KeyDB multi-master StatefulSet for shared validation cache
+keydb:
+  enabled: true
+  replicas: 2
+  image:
+    repository: eqalpha/keydb
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 100m
+      memory: 64Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+  livenessProbe:
+    tcpSocket:
+      port: 6379
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    tcpSocket:
+      port: 6379
+    initialDelaySeconds: 3
+    periodSeconds: 5
+
 # -- Use an existing secret instead of creating one. The secret must contain a key named "api_keys".
 existingSecret: ""
 
