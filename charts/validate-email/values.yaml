@@ -90,14 +90,25 @@ waitressThreads: 16
 # -- Cache TTL in seconds for validated email results
 cacheTTL: 300
 
-# -- KeyDB multi-master StatefulSet for shared validation cache
-keydb:
+# -- Valkey cache for shared validation result deduplication across pods.
+# --
+# -- mode: "single"     — 1 Valkey pod, emptyDir, no persistence (default)
+# -- mode: "replicated" — 1 master + 1 replica, emptyDir, automatic failover
+# --                       during rolling restarts (replica holds data while master restarts)
+# --
+# -- Set enabled: false to disable the cache entirely (app falls back to no-cache).
+cache:
   enabled: true
-  replicas: 2
+  # -- "single" or "replicated"
+  mode: single
   image:
-    repository: eqalpha/keydb
-    tag: latest
+    repository: valkey/valkey
+    tag: 8-alpine
     pullPolicy: IfNotPresent
+  # -- Valkey maxmemory (should fit within resource limits)
+  maxmemory: 48mb
+  # -- Eviction policy when maxmemory is reached
+  maxmemoryPolicy: allkeys-lru
   resources:
     limits:
       cpu: 100m
@@ -106,13 +117,13 @@ keydb:
       cpu: 50m
       memory: 32Mi
   livenessProbe:
-    tcpSocket:
-      port: 6379
+    exec:
+      command: ["valkey-cli", "ping"]
     initialDelaySeconds: 5
     periodSeconds: 10
   readinessProbe:
-    tcpSocket:
-      port: 6379
+    exec:
+      command: ["valkey-cli", "ping"]
     initialDelaySeconds: 3
     periodSeconds: 5
 

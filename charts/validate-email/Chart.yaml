@@ -1,7 +1,7 @@
 apiVersion: v2
 name: validate-email
 type: application
-version: "v0.4.0"
+version: "1.5.0"
 appVersion: "v0.4.0"
 description: >-
   Email deliverability validation API. Checks whether an email address is

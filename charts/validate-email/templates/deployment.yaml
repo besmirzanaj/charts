@@ -39,9 +39,9 @@ spec:
               value: {{ .Values.smtpTimeout | quote }}
             - name: VALIDATE_WAITRESS_THREADS
               value: {{ .Values.waitressThreads | quote }}
-            {{- if .Values.keydb.enabled }}
+            {{- if .Values.cache.enabled }}
             - name: VALIDATE_CACHE_REDIS_URL
-              value: "redis://{{ include "validate-email.fullname" . }}-keydb-0.{{ include "validate-email.fullname" . }}-keydb:6379/0"
+              value: "redis://{{ include "validate-email.fullname" . }}-cache-0.{{ include "validate-email.fullname" . }}-cache:6379/0"
             {{- end }}
             - name: VALIDATE_CACHE_TTL
               value: {{ .Values.cacheTTL | quote }}

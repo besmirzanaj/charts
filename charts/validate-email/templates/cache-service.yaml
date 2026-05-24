@@ -1,19 +1,20 @@
-{{- if .Values.keydb.enabled }}
+{{- if .Values.cache.enabled }}
+# Headless service for StatefulSet DNS (pod-0.cache, pod-1.cache, etc.)
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "validate-email.fullname" . }}-keydb
+  name: {{ include "validate-email.fullname" . }}-cache
   labels:
     {{- include "validate-email.labels" . | nindent 4 }}
-    app.kubernetes.io/component: keydb
+    app.kubernetes.io/component: cache
 spec:
   clusterIP: None
   ports:
     - port: 6379
       targetPort: 6379
       protocol: TCP
-      name: keydb
+      name: valkey
   selector:
     {{- include "validate-email.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: keydb
+    app.kubernetes.io/component: cache
 {{- end }}

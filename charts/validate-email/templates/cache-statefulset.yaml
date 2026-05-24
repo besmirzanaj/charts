@@ -1,0 +1,91 @@
+{{- if .Values.cache.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "validate-email.fullname" . }}-cache
+  labels:
+    {{- include "validate-email.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cache
+spec:
+  serviceName: {{ include "validate-email.fullname" . }}-cache
+  {{- if eq .Values.cache.mode "replicated" }}
+  replicas: 2
+  {{- else }}
+  replicas: 1
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "validate-email.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: cache
+  template:
+    metadata:
+      labels:
+        {{- include "validate-email.labels" . | nindent 8 }}
+        app.kubernetes.io/component: cache
+    spec:
+      containers:
+        - name: valkey
+          image: "{{ .Values.cache.image.repository }}:{{ .Values.cache.image.tag }}"
+          imagePullPolicy: {{ .Values.cache.image.pullPolicy }}
+          ports:
+            - containerPort: 6379
+              name: valkey
+          {{- if eq .Values.cache.mode "replicated" }}
+          # In replicated mode, pod-0 is master, pod-1+ are replicas.
+          # The entrypoint script detects ordinal from hostname.
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              ORDINAL=${HOSTNAME##*-}
+              if [ "$ORDINAL" != "0" ]; then
+                MASTER="{{ include "validate-email.fullname" . }}-cache-0.{{ include "validate-email.fullname" . }}-cache"
+                exec valkey-server \
+                  --save "" \
+                  --appendonly no \
+                  --maxmemory {{ .Values.cache.maxmemory }} \
+                  --maxmemory-policy {{ .Values.cache.maxmemoryPolicy }} \
+                  --replicaof "$MASTER" 6379
+              else
+                exec valkey-server \
+                  --save "" \
+                  --appendonly no \
+                  --maxmemory {{ .Values.cache.maxmemory }} \
+                  --maxmemory-policy {{ .Values.cache.maxmemoryPolicy }}
+              fi
+          {{- else }}
+          command:
+            - valkey-server
+            - --save
+            - ""
+            - --appendonly
+            - "no"
+            - --maxmemory
+            - {{ .Values.cache.maxmemory | quote }}
+            - --maxmemory-policy
+            - {{ .Values.cache.maxmemoryPolicy }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.cache.resources | nindent 12 }}
+          {{- with .Values.cache.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cache.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
