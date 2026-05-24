@@ -1,4 +1,4 @@
-{{- if and .Values.cache.enabled (ne .Values.cache.mode "cluster") }}
+{{- if and .Values.cache.enabled (eq .Values.cache.mode "cluster") }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -8,11 +8,8 @@ metadata:
     app.kubernetes.io/component: cache
 spec:
   serviceName: {{ include "validate-email.fullname" . }}-cache
-  {{- if eq .Values.cache.mode "replicated" }}
-  replicas: 2
-  {{- else }}
-  replicas: 1
-  {{- end }}
+  replicas: {{ .Values.cache.cluster.nodes }}
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       {{- include "validate-email.selectorLabels" . | nindent 6 }}
@@ -30,38 +27,23 @@ spec:
           ports:
             - containerPort: 6379
               name: valkey
-          {{- if eq .Values.cache.mode "replicated" }}
+            - containerPort: 16379
+              name: cluster-bus
           command: ["/bin/sh", "-c"]
           args:
             - |
-              ORDINAL=${HOSTNAME##*-}
-              if [ "$ORDINAL" != "0" ]; then
-                MASTER="{{ include "validate-email.fullname" . }}-cache-0.{{ include "validate-email.fullname" . }}-cache"
-                exec valkey-server \
-                  --save "" \
-                  --appendonly no \
-                  --maxmemory {{ .Values.cache.maxmemory }} \
-                  --maxmemory-policy {{ .Values.cache.maxmemoryPolicy }} \
-                  --replicaof "$MASTER" 6379
-              else
-                exec valkey-server \
-                  --save "" \
-                  --appendonly no \
-                  --maxmemory {{ .Values.cache.maxmemory }} \
-                  --maxmemory-policy {{ .Values.cache.maxmemoryPolicy }}
-              fi
-          {{- else }}
-          command:
-            - valkey-server
-            - --save
-            - ""
-            - --appendonly
-            - "no"
-            - --maxmemory
-            - {{ .Values.cache.maxmemory | quote }}
-            - --maxmemory-policy
-            - {{ .Values.cache.maxmemoryPolicy }}
-          {{- end }}
+              POD_IP=$(hostname -i)
+              exec valkey-server \
+                --cluster-enabled yes \
+                --cluster-config-file /data/nodes.conf \
+                --cluster-node-timeout {{ .Values.cache.cluster.nodeTimeout }} \
+                --save "" \
+                --appendonly no \
+                --maxmemory {{ .Values.cache.maxmemory }} \
+                --maxmemory-policy {{ .Values.cache.maxmemoryPolicy }} \
+                --cluster-announce-ip "$POD_IP" \
+                --cluster-announce-port 6379 \
+                --cluster-announce-bus-port 16379
           volumeMounts:
             - name: data
               mountPath: /data

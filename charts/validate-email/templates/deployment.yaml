@@ -42,6 +42,10 @@ spec:
             {{- if .Values.cache.enabled }}
             - name: VALIDATE_CACHE_REDIS_URL
               value: "redis://{{ include "validate-email.fullname" . }}-cache-0.{{ include "validate-email.fullname" . }}-cache:6379/0"
+            {{- if eq .Values.cache.mode "cluster" }}
+            - name: VALIDATE_CACHE_CLUSTER
+              value: "true"
+            {{- end }}
             {{- end }}
             - name: VALIDATE_CACHE_TTL
               value: {{ .Values.cacheTTL | quote }}

@@ -93,13 +93,15 @@ cacheTTL: 300
 # -- Valkey cache for shared validation result deduplication across pods.
 # --
 # -- mode: "single"     — 1 Valkey pod, emptyDir, no persistence (default)
-# -- mode: "replicated" — 1 master + 1 replica, emptyDir, automatic failover
-# --                       during rolling restarts (replica holds data while master restarts)
+# -- mode: "replicated" — 1 master + 1 replica, emptyDir, data survives single-pod restart
+# -- mode: "cluster"    — Valkey Cluster (N masters + replicas), emptyDir, automatic
+# --                       sharding and failover. Data survives pod restarts as long as
+# --                       quorum is maintained. Requires a one-time init Job.
 # --
 # -- Set enabled: false to disable the cache entirely (app falls back to no-cache).
 cache:
   enabled: true
-  # -- "single" or "replicated"
+  # -- "single", "replicated", or "cluster"
   mode: single
   image:
     repository: valkey/valkey
@@ -126,6 +128,14 @@ cache:
       command: ["valkey-cli", "ping"]
     initialDelaySeconds: 3
     periodSeconds: 5
+  # -- Cluster mode settings (only used when mode: "cluster")
+  cluster:
+    # -- Total number of nodes (masters + replicas). Minimum 6 for 3 masters + 3 replicas.
+    nodes: 6
+    # -- Number of replicas per master (1 = 3 masters + 3 replicas with 6 nodes)
+    replicas: 1
+    # -- Cluster node timeout in milliseconds
+    nodeTimeout: 5000
 
 # -- Use an existing secret instead of creating one. The secret must contain a key named "api_keys".
 existingSecret: ""
