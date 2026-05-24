@@ -1,8 +1,8 @@
 apiVersion: v2
 name: validate-email
 type: application
-version: "v0.2.3"
-appVersion: "v0.2.3"
+version: "v0.3.0"
+appVersion: "v0.3.0"
 description: >-
   Email deliverability validation API. Checks whether an email address is
   actually active by resolving the domain's MX records and probing the SMTP
