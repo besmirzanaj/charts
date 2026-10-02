@@ -17,7 +17,11 @@ spec:
       {{- end }}
       labels:
         {{- include "validate-email.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
+        # Distinguishes the API pods from the cache pods, which share the
+        # name/instance labels. The Deployment selector itself is immutable,
+        # so it stays on selectorLabels; the Service and PodMonitor use this.
+        app.kubernetes.io/component: server
+        {{- with omit .Values.podLabels "app.kubernetes.io/component" }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:

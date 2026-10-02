@@ -136,6 +136,9 @@ cache:
     replicas: 1
     # -- Cluster node timeout in milliseconds
     nodeTimeout: 5000
+    # -- How often the CronJob checks the cluster and re-forms it if a node is
+    # unhealthy or missing a peer (pods restart empty: topology is on emptyDir)
+    reconcileSchedule: "*/2 * * * *"
 
 # -- Use an existing secret instead of creating one. The secret must contain a key named "api_keys".
 existingSecret: ""
