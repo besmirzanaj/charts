@@ -1,3 +1,7 @@
+> **Deprecated (2026-10-02).** validate-email is now built and deployed as part of validate.al
+> (`github.com/besmirzanaj/validate-al-website`: source in `email-api/`, manifests in `deploy/k8s`).
+> This chart gets no further updates.
+
 # validate-email
 
 ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
